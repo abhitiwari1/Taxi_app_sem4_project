@@ -1,10 +1,10 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
-const UserLogout = () => {
+export const UserLogout = () => {
 
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem('token')
     const navigate = useNavigate()
 
     axios.get(`${import.meta.env.VITE_API_URL}/users/logout`, {
@@ -12,19 +12,15 @@ const UserLogout = () => {
             Authorization: `Bearer ${token}`
         }
     }).then((response) => {
-        if(response.status === 200) {
-            localStorage.removeItem("token")
-            navigate("/login")
+        if (response.status === 200) {
+            localStorage.removeItem('token')
+            navigate('/login')
         }
-    }).catch((error) => {
-        console.log(error)
     })
 
-  return (
-    <div>
-      
-    </div>
-  )
+    return (
+        <div>UserLogout</div>
+    )
 }
 
 export default UserLogout
