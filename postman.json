@@ -1,0 +1,82 @@
+"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2U2OTI0OGQwMzFmN2MyNjViMDQwOGUiLCJpYXQiOjE3NDMxNjM5NzZ9.aiimtrv4ueGJaJyi-D9o43Qtquj-405zM65Odutqmvw",
+"user": {
+    "fullname": {
+        "firstname": "Abhishek",
+        "lastname": "Tiwari"
+    },
+    "email": "tiwari1@gmail.com",
+    "password": "$2b$10$TbpMCqGVjEIaYKDFQZ5Mpu9A5LZ0geKD6CCSV6.jubxF2aJjsqFPm",
+    "_id": "67e69248d031f7c265b0408e",
+    "__v": 0
+}
+
+    "fullname": {
+    "firstname": "test_captain_firstname",
+    "lastname": "test_captain_lastname"
+},
+"email": "test_captain@gmail.com",
+"password": "cs4yjft",
+"vehicle": {
+    "color": "black",
+    "plate": "BR 000777",
+    "capacity": 3,
+    "vehicleType": "car"
+}
+
+    {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2U3MDJlZTg4ODE5M2M2OTI3ZWEzNGMiLCJpYXQiOjE3NDMxOTI4MTQsImV4cCI6MTc0MzI3OTIxNH0._GPUXOyLtK3t6Xdyokte1pb0B6YcK3ZWgpT9rHT9iis",
+    "captain": {
+        "fullname": {
+            "firstname": "test_captain_firstname",
+            "lastname": "test_captain_lastname"
+        },
+        "email": "test_captain@gmail.com",
+        "password": "$2b$10$9V0kwX5N8.P35Cxfz2sxauC.c8LDcnTg8jNXcnJe0azl37eoYAbZK",
+        "status": "inactive",
+        "vehicle": {
+            "color": "black",
+            "plate": "BR 000777",
+            "capacity": 3,
+            "vehicleType": "car"
+        },
+        "_id": "67e702ee888193c6927ea34c",
+        "__v": 0
+    }
+}
+
+{
+    "fullname": {
+        "firstname": "captain_firstname",
+        "lastname": "captain_lastname"
+    },
+    "email": "captain@gmail.com",
+    "password": "automode",
+    "vehicle": {
+        "color": "white",
+        "plate": "UP 000777",
+        "capacity": 2,
+        "vehicleType": "motorcycle"
+    }
+
+}
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2U3OTJlNGQxMTdhZTQzZjRlODY0NWQiLCJpYXQiOjE3NDMyMjk2NjgsImV4cCI6MTc0MzMxNjA2OH0.s9XZmZWr_QpLbKL1N9GA0wx20xFMJTLJfkpsZdMNjhY",
+    "captain": {
+        "fullname": {
+            "firstname": "captain_firstname",
+            "lastname": "captain_lastname"
+        },
+        "email": "captain@gmail.com",
+        "password": "$2b$10$6C6miBowbnMn19M7ZHtyOOpv8sgIiL5PC.5SD4cJdfVdApTyhBcUe",
+        "status": "inactive",
+        "vehicle": {
+            "color": "white",
+            "plate": "UP 000777",
+            "capacity": 2,
+            "vehicleType": "motorcycle"
+        },
+        "_id": "67e792e4d117ae43f4e8645d",
+        "__v": 0
+    }
+}
