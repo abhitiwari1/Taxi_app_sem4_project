@@ -16,14 +16,14 @@ module.exports.createRide = async (req, res) => {
     try {
         const ride = await rideService.createRide({ user: req.user._id, pickup, destination, vehicleType });
         res.status(201).json(ride);
-
+        console.log("ride created",ride);
         const pickupCoordinates = await mapService.getAddressCoordinate(pickup);
 
 
         console.log(pickupCoordinates);
         const captainsInRadius = await mapService.getCaptainsInTheRadius(pickupCoordinates.lat, pickupCoordinates.lon, 2);
         console.log("captans:-",captainsInRadius);
-        ride.otp = "123456";
+        ride.otp = "";
 
         const rideWithUser = await rideModel.findOne({ _id: ride._id }).populate('user');
 

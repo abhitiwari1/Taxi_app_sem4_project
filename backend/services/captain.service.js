@@ -19,7 +19,9 @@ module.exports.createCaptain = async ({
             plate,
             capacity,
             vehicleType
-        }
+        },
+        numberOfRides: 0,
+        rating :3.5
     })
 
     return captain;

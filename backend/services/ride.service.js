@@ -1,3 +1,4 @@
+const { console } = require('inspector');
 const rideModel = require('../models/ride.model');
 const mapService = require('./maps.service');
 const bcrypt = require('bcrypt');
@@ -35,10 +36,10 @@ async function getFare(pickup, destination) {
     const fare = {
         auto: Math.round(baseFare.auto + ((distanceTime.distance.value / 1000) * perKmRate.auto) + ((distanceTime.duration.value / 60) * perMinuteRate.auto)),
         car: Math.round(baseFare.car + ((distanceTime.distance.value / 1000) * perKmRate.car) + ((distanceTime.duration.value / 60) * perMinuteRate.car)),
-        moto: Math.round(baseFare.moto + ((distanceTime.distance.value / 1000) * perKmRate.moto) + ((distanceTime.duration.value / 60) * perMinuteRate.moto))
+        moto: Math.round(baseFare.moto + ((distanceTime.distance.value / 1000) * perKmRate.moto) + ((distanceTime.duration.value / 60) * perMinuteRate.moto)),
     };
 
-    return fare;
+    return {"fare":fare,"distance":distanceTime.distance.value / 1000,"duration":distanceTime.duration.value / 60};
 
 
 }
@@ -62,18 +63,20 @@ module.exports.createRide = async ({
         throw new Error('All fields are required');
     }
 
-    const fare = await getFare(pickup, destination);
+    const {fare,distance,duration} = await getFare(pickup, destination);
 
-
-
+    console.log('Fare:', fare);
+    console.log('Distance:', distance);
+    console.log('Duration:', duration);
     const ride = rideModel.create({
         user,
         pickup,
         destination,
         otp: getOtp(6),
+        distance: distance,   // corrected
+        duration: duration,   // corrected
         fare: fare[ vehicleType ]
     })
-
     return ride;
 }
 
