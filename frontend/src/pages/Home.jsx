@@ -179,6 +179,7 @@ const Home = () => {
 
 
         setFare(response.data)
+        
 
 
     }

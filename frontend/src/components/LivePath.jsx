@@ -3,130 +3,106 @@ import { MapContainer, TileLayer, Marker, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import axios from 'axios';
+// Custom icons
+const greenIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
 
-// Helper to create marker icons
-const createIcon = (color) =>
-  new L.Icon({
-    iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
-    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41],
-  });
+const redIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
 
-const icons = {
-  green: createIcon('green'),
-  red: createIcon('red'),
-  blue: createIcon('blue'),
-};
+const blueIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
 
-const LivePath = ({ ride }) => {
+const LivePath = ({ride}) => {
   const [currentPosition, setCurrentPosition] = useState(null);
-  const [destination, setDestination] = useState(null);
-  const [source, setSource] = useState(null);
-  const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [locationError, setLocationError] = useState(false);
+  const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [mapOnTop, setMapOnTop] = useState(false);
 
   const mapRef = useRef(null);
   const hasCentered = useRef(false);
   const userMovedMap = useRef(false);
-
-  const apiKey = import.meta.env.VITE_LOCATIONIQ_API_KEY;
-
-  // Fetch source and destination coordinates on mount
-  useEffect(() => {
-    const fetchCoordinates = async () => {
-      if (!ride?.destination || !ride?.source) return;
-      try {
-        const token = localStorage.getItem('token');
-        const headers = { Authorization: `Bearer ${token}` };
-
-        const [destRes, srcRes] = await Promise.all([
-          axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-coordinates`, {
-            params: { address: ride.destination },
-            headers,
-          }),
-          axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-coordinates`, {
-            params: { address: ride.source },
-            headers,
-          }),
-        ]);
-
-        setDestination({
-          lat: destRes.data.lat,
-          lng: destRes.data.lng,
-        });
-        setSource({
-          lat: srcRes.data.lat,
-          lng: srcRes.data.lng,
-        });
-      } catch (err) {
-        console.error('Error fetching source/destination coordinates:', err);
-      }
-    };
-
-    fetchCoordinates();
-  }, [ride]);
-
-  // Get live user position and track updates
-  useEffect(() => {
-    if (!navigator.geolocation) {
-      console.error('Geolocation not supported.');
-      setLocationError(true);
-      return;
+  console.log("ride",ride, ride?.destination)
+  const fetchCoordinates = async () => {
+    try {
+      const response = await axios.get(url);
+      console.log(response.data.lat, response.data.lon); // ✅ Access here
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const destcord = axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-coordinates`, {
+    params: { address: ride?.destination },
+    headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
     }
 
+  })
+  console.log("cordidates",destcord, destcord.data, destcord.data);
+  console.log("data",destcord.data);
+  const destination = { lat: 28.5672, lng: 77.2100 };
+  const source = { lat: 28.5672, lng: 77.2100 };
+  const apiKey = 'pk.7ffdf5d95e280c57cc9b4edbf441f95e'; // Replace with your API key
+
+  useEffect(() => {
     const successCallback = (position) => {
       const { latitude, longitude } = position.coords;
-      setCurrentPosition({ lat: latitude, lng: longitude });
+      const newPosition = { lat: latitude, lng: longitude };
+      setCurrentPosition(newPosition);
       setLocationError(false);
+      fetchRoute(newPosition);
     };
-    const errorCallback = () => setLocationError(true);
 
-    navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-    const watchId = navigator.geolocation.watchPosition(successCallback, errorCallback);
-    return () => navigator.geolocation.clearWatch(watchId);
+    const errorCallback = (error) => {
+      console.error("Error getting location: ", error);
+      setLocationError(true);
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+      const watchId = navigator.geolocation.watchPosition(successCallback, errorCallback);
+      return () => navigator.geolocation.clearWatch(watchId);
+    } else {
+      console.error("Geolocation not supported.");
+      setLocationError(true);
+    }
   }, []);
 
-  // Fetch route when currentPosition and destination are available
+  const fetchRoute = async (startPos) => {
+    if (!startPos) return;
+    try {
+      const url = `https://eu1.locationiq.com/v1/directions/driving/${startPos.lng},${startPos.lat};${destination.lng},${destination.lat}?key=${apiKey}&overview=full&geometries=geojson`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      const coordinates = data.routes[0].geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+      setRouteCoordinates(coordinates);
+    } catch (error) {
+      console.error("Error fetching route:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchRoute = async () => {
-      if (!currentPosition || !destination) return;
-
-      try {
-        const { lng: startLng, lat: startLat } = currentPosition;
-        const { lng: destLng, lat: destLat } = destination;
-        const url = `https://eu1.locationiq.com/v1/directions/driving/${startLng},${startLat};${destLng},${destLat}?key=${apiKey}&overview=full&geometries=geojson`;
-        const res = await fetch(url);
-        const data = await res.json();
-
-        if (data.routes?.length) {
-          const coords = data.routes[0].geometry.coordinates.map(
-            ([lng, lat]) => [lat, lng]
-          );
-          setRouteCoordinates(coords);
-        } else {
-          console.error('No route found:', data);
-        }
-      } catch (err) {
-        console.error('Error fetching route:', err);
-      }
-    };
-
-    fetchRoute();
-  }, [currentPosition, destination, apiKey]);
-
-  // Center map on user's current position initially
-  useEffect(() => {
-    if (
-      mapRef.current &&
-      currentPosition &&
-      !hasCentered.current &&
-      !userMovedMap.current
-    ) {
-      mapRef.current.setView(currentPosition, 15);
+    if (mapRef.current && currentPosition && !hasCentered.current && !userMovedMap.current) {
+      mapRef.current.setView(currentPosition, 60);
       hasCentered.current = true;
     }
   }, [currentPosition]);
@@ -135,12 +111,14 @@ const LivePath = ({ ride }) => {
     return (
       <div style={{ padding: '20px', color: 'red' }}>
         <h2>Error: Could not retrieve location.</h2>
-        <p>Please enable location access and grant permissions.</p>
+        <p>Please make sure location access is enabled and permissions are granted.</p>
       </div>
     );
   }
 
-  if (!currentPosition) return <div>Loading...</div>;
+  if (!currentPosition) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div style={{ height: '100vh', position: 'relative', overflow: 'hidden' }}>
@@ -159,9 +137,11 @@ const LivePath = ({ ride }) => {
         <MapContainer
           center={currentPosition}
           zoom={15}
-          whenCreated={(map) => {
-            mapRef.current = map;
-            map.on('movestart', () => (userMovedMap.current = true));
+          whenCreated={(mapInstance) => {
+            mapRef.current = mapInstance;
+            mapInstance.on('movestart', () => {
+              userMovedMap.current = true;
+            });
           }}
           style={{ width: '100%', height: '100%' }}
         >
@@ -170,9 +150,9 @@ const LivePath = ({ ride }) => {
             attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
           />
 
-          <Marker position={currentPosition} icon={icons.green} />
-          {destination && <Marker position={destination} icon={icons.red} />}
-          {source && <Marker position={source} icon={icons.blue} />}
+          <Marker position={source} icon={blueIcon} />
+          <Marker position={destination} icon={redIcon} />
+          <Marker position={currentPosition} icon={greenIcon} />
 
           {routeCoordinates.length > 0 && (
             <Polyline positions={routeCoordinates} color="blue" weight={4} />
